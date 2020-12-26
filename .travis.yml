@@ -1,32 +1,15 @@
-dist: trusty
+dist: xenial
 sudo: required
-
-services: docker
-
-language: bash
-
-branches:
-  only:
-    - master
-
-before_script:
-  - env | sort
-  - dir="${VARIANT}"
-
-script:
-  - cd "$dir"
-  - docker-compose build
-  - docker images
-  - travis_retry docker-compose up -d && sleep 60
-  - docker-compose ps
-  - docker-compose logs
-  - docker-compose ps "roundcubedb" | grep "Up"
-  - docker-compose ps "roundcubemail" | grep "Up"
-
-notifications:
-  email: false
-
 env:
-  - VERSION=1.4.9 VARIANT=apache
-  - VERSION=1.4.9 VARIANT=fpm
-  - VERSION=1.4.9 VARIANT=fpm-alpine
+  global:
+    - DOCKER_REPO=dockerpirate/dokuwiki
+before_install:
+  - curl -fsSL https://get.docker.com | sh
+  - echo '{"experimental":"enabled"}' | sudo tee /etc/docker/daemon.json
+  - mkdir -p $HOME/.docker
+  - echo '{"experimental":"enabled"}' | sudo tee $HOME/.docker/config.json
+  - sudo service docker start
+install:
+  - docker run --rm --privileged multiarch/qemu-user-static --reset -p yes
+  - docker buildx create --name xbuilder --use
+script: bash ci.sh
