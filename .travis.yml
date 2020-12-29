@@ -3,6 +3,12 @@ sudo: required
 env:
   global:
     - DOCKER_REPO=dockerpirate/roundcube
+    - ALPINE_M=3
+    - ALPINE_P=12
+    - APACHE_M=apache
+    - FPM_M=fpm
+    - FPM_A=fpm-alpine
+    - ROUNC_M=1.4.9
 before_install:
   - curl -fsSL https://get.docker.com | sh
   - echo '{"experimental":"enabled"}' | sudo tee /etc/docker/daemon.json
